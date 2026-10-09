@@ -1,0 +1,99 @@
+const { pool } = require('../config/db');
+
+async function create({ teacher_id, subject_id, priority_id, status_id, lesson_date, lesson_time, total_copies, notes }) {
+  const [result] = await pool.query(
+    `INSERT INTO print_requests (teacher_id, subject_id, priority_id, status_id, lesson_date, lesson_time, total_copies, notes)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [teacher_id, subject_id, priority_id, status_id, lesson_date, lesson_time || null, total_copies, notes || null]
+  );
+  return result.insertId;
+}
+
+async function addClasses(printRequestId, classes) {
+  if (!classes.length) return;
+  const values = classes.map(({ class_id, copies_count }) => [printRequestId, class_id, copies_count]);
+  await pool.query('INSERT INTO print_request_classes (print_request_id, class_id, copies_count) VALUES ?', [values]);
+}
+
+async function addFile({ print_request_id, original_name, stored_name, file_path, file_size, mime_type }) {
+  const [result] = await pool.query(
+    `INSERT INTO print_files (print_request_id, original_name, stored_name, file_path, file_size, mime_type)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [print_request_id, original_name, stored_name, file_path, file_size, mime_type]
+  );
+  return result.insertId;
+}
+
+async function findById(id) {
+  const [rows] = await pool.query(
+    `SELECT pr.*, u.name AS teacher_name, s.name AS subject_name,
+            pp.code AS priority, ps.code AS status
+     FROM print_requests pr
+     JOIN users u            ON u.id  = pr.teacher_id
+     JOIN subjects s         ON s.id  = pr.subject_id
+     JOIN print_priorities pp ON pp.id = pr.priority_id
+     JOIN print_statuses ps   ON ps.id = pr.status_id
+     WHERE pr.id = ? LIMIT 1`,
+    [id]
+  );
+  if (!rows[0]) return null;
+
+  const request = rows[0];
+  const [classes] = await pool.query(
+    `SELECT prc.class_id, prc.copies_count, c.name AS class_name, c.student_count
+     FROM print_request_classes prc
+     JOIN classes c ON c.id = prc.class_id
+     WHERE prc.print_request_id = ?`,
+    [id]
+  );
+  const [files] = await pool.query('SELECT * FROM print_files WHERE print_request_id = ?', [id]);
+  request.classes = classes;
+  request.files   = files;
+  return request;
+}
+
+async function findByTeacher(teacherId, { page, limit, offset } = {}) {
+  const [rows] = await pool.query(
+    `SELECT pr.*, s.name AS subject_name, pp.code AS priority, ps.code AS status
+     FROM print_requests pr
+     JOIN subjects s          ON s.id  = pr.subject_id
+     JOIN print_priorities pp ON pp.id = pr.priority_id
+     JOIN print_statuses ps   ON ps.id = pr.status_id
+     WHERE pr.teacher_id = ?
+     ORDER BY pr.created_at DESC
+     LIMIT ? OFFSET ?`,
+    [teacherId, limit || 20, offset || 0]
+  );
+  const [[{ total }]] = await pool.query(
+    'SELECT COUNT(*) AS total FROM print_requests WHERE teacher_id = ?',
+    [teacherId]
+  );
+  return { rows, total };
+}
+
+async function updateStatus(id, statusCode) {
+  await pool.query(
+    `UPDATE print_requests SET status_id = (SELECT id FROM print_statuses WHERE code = ? LIMIT 1) WHERE id = ?`,
+    [statusCode, id]
+  );
+}
+
+async function remove(id) {
+  const [result] = await pool.query('DELETE FROM print_requests WHERE id = ?', [id]);
+  return result.affectedRows > 0;
+}
+
+async function getPriorityId(code) {
+  const [rows] = await pool.query('SELECT id FROM print_priorities WHERE code = ? LIMIT 1', [code]);
+  return rows[0]?.id || null;
+}
+
+async function getDefaultStatusId() {
+  const [rows] = await pool.query("SELECT id FROM print_statuses WHERE code = 'pending' LIMIT 1");
+  return rows[0]?.id || null;
+}
+
+module.exports = {
+  create, addClasses, addFile, findById, findByTeacher,
+  updateStatus, remove, getPriorityId, getDefaultStatusId,
+};
