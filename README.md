@@ -1,6 +1,6 @@
 # 🎓 EduFlow
 
-> **A production-ready full-stack school management platform featuring real-time collaboration, print workflow automation, grade management, internal messaging, and role-based access control.**
+> **A production-ready full-stack school management platform featuring real-time collaboration, print workflow automation, grade management, internal messaging, and role-based access control. It is a Capstone Project for my Software Development  Course at TS Acdemy**
 
 > 🚧 **Roadmap:** EduFlow is currently being expanded into a multi-school (multi-tenant) platform for real-world deployment.
 
