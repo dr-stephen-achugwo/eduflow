@@ -329,14 +329,4 @@ http://localhost:5173
 - Docker support
 - CI/CD pipeline
 - Unit Testing
-- Integration Testing
-
----
-
-# 👩‍💻 Author
-
-**Ahuva Fogel**
-
-Software Developer specializing in Backend Development, Full-Stack Applications, Database Systems, Software Architecture, and AI-powered solutions.
-
-**GitHub:** https://github.com/af-programmer
+- Integration 
