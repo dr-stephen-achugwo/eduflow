@@ -113,7 +113,7 @@ student-portal-system
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/22030084-code/student-portal-system.git
+https://github.com/dr-stephen-achugwo/eduflow
 ```
 
 Open the project folder:
@@ -150,7 +150,7 @@ PORT=5000
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=YOUR_MYSQL_PASSWORD
-DB_NAME=student_portal_db
+DB_NAME=eduflow_db
 JWT_SECRET=YOUR_SECRET_KEY
 ```
 
@@ -170,6 +170,10 @@ The backend will run at:
 
 ```text
 http://localhost:5000
+or
+https://eduflow.apps.net.ng
+or
+https://yourdomain.cpm
 ```
 
 Test the database connection:
