@@ -1,4 +1,4 @@
-# Student Portal System
+# Student Management System
 
 A full-stack Student Portal System developed using ReactJS, Node.js, Express.js, and MySQL.
 
