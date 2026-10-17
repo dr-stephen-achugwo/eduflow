@@ -274,14 +274,14 @@ Screenshots of the following pages will be added:
 
 ## Contribution Statement
 
-This project was completed individually by:
+This project was completed by:
 
-**Abdel Rahman Othman**
+**Stephen Chinedu Achugwo**
 
 ## Course Information
 
 ```text
-Course: CSCI426 – Advanced Web Programming
-Project: Student Portal System
-Semester: Summer 2025–2026
+Course: Capstone Project,
+Software Development
+TS Academy, 2026
 ```
